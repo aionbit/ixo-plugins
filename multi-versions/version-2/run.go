@@ -11,7 +11,7 @@ type request any
 // Input 输入
 func Input() interface{} {
 	var r request
-	return r
+	return &r
 }
 
 // Run Note
