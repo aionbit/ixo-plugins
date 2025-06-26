@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"github.com/aionbit/ixo-plugins/multi-versions/lib"
+	"github.com/aionbit/ixo-plugins/multi-versions/version-2/common"
 	"github.com/ohler55/ojg/jp"
 	"github.com/ohler55/ojg/oj"
 )
@@ -21,7 +22,7 @@ func Run(ctx context.Context, input interface{}) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	setExpr, err := jp.ParseString("$.version")
+	setExpr, err := jp.ParseString(common.Path())
 	if err != nil {
 		return nil, err
 	}
