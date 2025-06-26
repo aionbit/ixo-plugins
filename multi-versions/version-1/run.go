@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/aionbit/ixo-plugins/multi-versions/lib"
 	"github.com/ohler55/ojg/jp"
 	"github.com/ohler55/ojg/oj"
 )
@@ -16,7 +17,7 @@ func Input() interface{} {
 
 // Run Note
 func Run(ctx context.Context, input interface{}) (interface{}, error) {
-	data, err := oj.ParseString(`{"version": ""}`)
+	data, err := oj.ParseString(lib.Data())
 	if err != nil {
 		return nil, err
 	}
