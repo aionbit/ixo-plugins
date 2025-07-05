@@ -84,6 +84,7 @@ func Run(ctx context.Context, input interface{}) (interface{}, error) {
 	defer d.Body.Close()
 	resp := &Response{
 		StatusCode: d.StatusCode,
+		Header:     make(map[string]string),
 	}
 	for k, v := range d.Header {
 		if len(v) > 0 {
