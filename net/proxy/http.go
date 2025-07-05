@@ -33,7 +33,7 @@ func (r *Request) URL() string {
 			path += "?" + queries.Encode()
 		}
 	}
-	return r.Host + path
+	return "http://" + r.Host + path
 }
 
 type Response struct {
