@@ -47,26 +47,39 @@ func Input() interface{} {
 	return &Request{}
 }
 
+func errorResponse(err error) *Response {
+	if err == nil {
+		err = errors.New("unknown error")
+	}
+	return &Response{
+		StatusCode: http.StatusInternalServerError,
+		Header:     map[string]string{"Content-Type": "application/json"},
+		Body: map[string]string{
+			"error": "plugin:net/proxy " + err.Error(),
+		},
+	}
+}
+
 // Run Note
 func Run(ctx context.Context, input interface{}) (interface{}, error) {
 	req, ok := input.(*Request)
 	if !ok {
-		return nil, errors.New("plugin:net/proxy input is not a Request type")
+		return errorResponse(errors.New("input is not a Request type")), nil
 	}
 	b, err := json.Marshal(req.Body)
 	if err != nil {
-		return nil, errors.New("plugin:net/proxy marshal body error: " + err.Error())
+		return errorResponse(err), nil
 	}
 	r, err := http.NewRequestWithContext(ctx, req.Method, req.URL(), bytes.NewReader(b))
 	if err != nil {
-		return nil, errors.New("plugin:net/proxy create request error: " + err.Error())
+		return errorResponse(err), nil
 	}
 	for k, v := range req.Header {
 		r.Header.Set(k, v)
 	}
 	d, err := http.DefaultClient.Do(r)
 	if err != nil {
-		return nil, errors.New("plugin:net/proxy send http request error: " + err.Error())
+		return errorResponse(err), nil
 	}
 	defer d.Body.Close()
 	resp := &Response{
@@ -83,7 +96,7 @@ func Run(ctx context.Context, input interface{}) (interface{}, error) {
 	}
 	if len(body) > 0 {
 		if err := json.Unmarshal(body, &resp.Body); err != nil {
-			return nil, errors.New("plugin:net/proxy unmarshal response body error: " + err.Error())
+			return errorResponse(err), nil
 		}
 	}
 	return resp, nil
