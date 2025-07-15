@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"gopkg.in/yaml.v3"
 	"io"
 	"net/http"
 	"net/url"
@@ -12,12 +13,12 @@ import (
 )
 
 type Request struct {
-	Host   string            `json:"host"`
-	Method string            `json:"method"`
-	Path   string            `json:"path"`
-	Query  map[string]string `json:"query"`
-	Header map[string]string `json:"header"`
-	Body   any               `json:"body"`
+	Host   string            `mapstructure:"host"`
+	Method string            `mapstructure:"method"`
+	Path   string            `mapstructure:"path"`
+	Query  map[string]string `mapstructure:"query"`
+	Header map[string]string `mapstructure:"header"`
+	Body   any               `mapstructure:"body"`
 }
 
 func (r *Request) URL() string {
@@ -37,9 +38,9 @@ func (r *Request) URL() string {
 }
 
 type Response struct {
-	StatusCode int               `json:"status_code"`
-	Header     map[string]string `json:"header"`
-	Body       any               `json:"body"`
+	StatusCode int
+	Header     map[string]string
+	Body       any
 }
 
 // Input 输入
@@ -53,7 +54,6 @@ func errorResponse(err error) *Response {
 	}
 	return &Response{
 		StatusCode: http.StatusInternalServerError,
-		Header:     map[string]string{"Content-Type": "application/json"},
 		Body: map[string]string{
 			"error": "plugin:net/proxy " + err.Error(),
 		},
@@ -66,11 +66,18 @@ func Run(ctx context.Context, input interface{}) (interface{}, error) {
 	if !ok {
 		return errorResponse(errors.New("input is not a Request type")), nil
 	}
-	b, err := json.Marshal(req.Body)
-	if err != nil {
-		return errorResponse(err), nil
+	buf := bytes.NewBuffer(nil)
+	switch {
+	case strings.Contains(req.Header["Content-Type"], "application/json"):
+		if err := json.NewEncoder(buf).Encode(req.Body); err != nil {
+			return errorResponse(err), nil
+		}
+	case strings.Contains(req.Header["Content-Type"], "application/x-yaml"):
+		if err := yaml.NewEncoder(buf).Encode(req.Body); err != nil {
+			return errorResponse(err), nil
+		}
 	}
-	r, err := http.NewRequestWithContext(ctx, req.Method, req.URL(), bytes.NewReader(b))
+	r, err := http.NewRequestWithContext(ctx, req.Method, req.URL(), buf)
 	if err != nil {
 		return errorResponse(err), nil
 	}
@@ -96,8 +103,18 @@ func Run(ctx context.Context, input interface{}) (interface{}, error) {
 		return nil, err
 	}
 	if len(body) > 0 {
-		if err := json.Unmarshal(body, &resp.Body); err != nil {
-			return errorResponse(err), nil
+		contentType := d.Header.Get("Content-Type")
+		switch {
+		case strings.Contains(contentType, "application/json"):
+			if err := json.NewEncoder(buf).Encode(req.Body); err != nil {
+				return errorResponse(err), nil
+			}
+		case strings.Contains(contentType, "application/x-yaml"):
+			if err := yaml.NewEncoder(buf).Encode(req.Body); err != nil {
+				return errorResponse(err), nil
+			}
+		default:
+			return errorResponse(errors.New("unsupported response header Content-Type: " + contentType)), nil
 		}
 	}
 	return resp, nil
