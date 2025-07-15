@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/aionbit/ixo-plugins/plugin"
 	"gopkg.in/yaml.v3"
 	"io"
 	"net/http"
@@ -43,11 +44,6 @@ type Response struct {
 	Body       any
 }
 
-// Input 输入
-func Input() interface{} {
-	return &Request{}
-}
-
 func errorResponse(err error) *Response {
 	if err == nil {
 		err = errors.New("unknown error")
@@ -55,38 +51,50 @@ func errorResponse(err error) *Response {
 	return &Response{
 		StatusCode: http.StatusInternalServerError,
 		Body: map[string]string{
-			"error": "plugin:net/proxy " + err.Error(),
+			"error": throw(err).Error(),
 		},
 	}
 }
 
+func throw(err error) error {
+	if err == nil {
+		return nil
+	}
+	return errors.New("plugin:net/proxy " + err.Error())
+}
+
+var PluginInstance = &proxy{}
+
+type proxy struct {
+}
+
 // Run Note
-func Run(ctx context.Context, input interface{}) (interface{}, error) {
-	req, ok := input.(*Request)
-	if !ok {
-		return errorResponse(errors.New("input is not a Request type")), nil
+func (p *proxy) Run(ctx context.Context, input any) (any, error) {
+	var req = &Request{}
+	if err := plugin.DecodeInput(input, &req); err != nil {
+		return nil, throw(err)
 	}
 	buf := bytes.NewBuffer(nil)
 	switch {
 	case strings.Contains(req.Header["Content-Type"], "application/json"):
 		if err := json.NewEncoder(buf).Encode(req.Body); err != nil {
-			return errorResponse(err), nil
+			return nil, throw(err)
 		}
 	case strings.Contains(req.Header["Content-Type"], "application/x-yaml"):
 		if err := yaml.NewEncoder(buf).Encode(req.Body); err != nil {
-			return errorResponse(err), nil
+			return nil, throw(err)
 		}
 	}
 	r, err := http.NewRequestWithContext(ctx, req.Method, req.URL(), buf)
 	if err != nil {
-		return errorResponse(err), nil
+		return nil, throw(err)
 	}
 	for k, v := range req.Header {
 		r.Header.Set(k, v)
 	}
 	d, err := http.DefaultClient.Do(r)
 	if err != nil {
-		return errorResponse(err), nil
+		return nil, throw(err)
 	}
 	defer d.Body.Close()
 	resp := &Response{
@@ -100,22 +108,22 @@ func Run(ctx context.Context, input interface{}) (interface{}, error) {
 	}
 	body, err := io.ReadAll(d.Body)
 	if err != nil {
-		return nil, err
+		return nil, throw(err)
 	}
 	if len(body) > 0 {
 		contentType := d.Header.Get("Content-Type")
 		switch {
 		case strings.Contains(contentType, "application/json"):
 			if err := json.NewEncoder(buf).Encode(req.Body); err != nil {
-				return errorResponse(err), nil
+				return nil, throw(err)
 			}
 		case strings.Contains(contentType, "application/x-yaml"):
 			if err := yaml.NewEncoder(buf).Encode(req.Body); err != nil {
-				return errorResponse(err), nil
+				return nil, throw(err)
 			}
 		default:
-			return errorResponse(errors.New("unsupported response header Content-Type: " + contentType)), nil
+			return nil, throw(errors.New("unsupported response header Content-Type: " + contentType))
 		}
 	}
-	return resp, nil
+	return plugin.EncodeOutput(resp)
 }
