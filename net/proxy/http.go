@@ -63,7 +63,7 @@ func throw(err error) error {
 	return errors.New("plugin:net/proxy " + err.Error())
 }
 
-var PluginInstance = &proxy{}
+var PluginInstance proxy
 
 type proxy struct {
 }
