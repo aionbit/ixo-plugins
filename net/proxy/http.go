@@ -114,11 +114,11 @@ func (p *proxy) Run(ctx context.Context, input any) (any, error) {
 		contentType := d.Header.Get("Content-Type")
 		switch {
 		case strings.Contains(contentType, "application/json"):
-			if err := json.Unmarshal(body, resp.Body); err != nil {
+			if err := json.Unmarshal(body, &resp.Body); err != nil {
 				return nil, throw(err)
 			}
 		case strings.Contains(contentType, "application/x-yaml"):
-			if err := yaml.Unmarshal(body, resp.Body); err != nil {
+			if err := yaml.Unmarshal(body, &resp.Body); err != nil {
 				return nil, throw(err)
 			}
 		default:
