@@ -2,8 +2,11 @@ package plugin
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/mitchellh/mapstructure"
 	"reflect"
+	"strings"
 )
 
 func DecodeInput(input, param any) error {
@@ -167,4 +170,46 @@ func (vb *Box) Get(name string) *Box {
 		return &Box{}
 	}
 
+}
+
+func NewError(pluginName string) *Error {
+	return &Error{pluginName: pluginName}
+}
+
+type Error struct {
+	pluginName string
+}
+
+func (e *Error) Throw(v ...any) error {
+	var errs []error
+	var tags []string
+	var others []any
+	for _, t := range v {
+		switch target := t.(type) {
+		case error:
+			if target != nil {
+				errs = append(errs, target)
+			}
+		case string:
+			if target != "" {
+				tags = append(tags, target)
+			}
+		default:
+			if target != nil {
+				others = append(others, target)
+			}
+		}
+	}
+	errorStr := "plugin"
+	if e.pluginName != "" {
+		errorStr += " " + e.pluginName
+	}
+	errorStr += " error:"
+	if len(tags) > 0 {
+		errorStr += " " + strings.Join(tags, " ")
+	}
+	if len(others) > 0 {
+		errorStr += " " + fmt.Sprintf("%v", others...)
+	}
+	return errors.New(errorStr)
 }
