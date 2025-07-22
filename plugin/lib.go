@@ -85,6 +85,10 @@ func (vb *Box) Int() (int, bool) {
 		return int(i), true
 	case uint64:
 		return int(i), true
+	case float32:
+		return int(i), true
+	case float64:
+		return int(i), true
 	}
 	return 0, false
 }

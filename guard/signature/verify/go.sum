@@ -1,0 +1,4 @@
+github.com/aionbit/ixo-plugins/plugin v0.0.0-20250721025127-33acfc63bf41 h1:NXCjby0lmeYlK+CR5hG4kSPR1yYWH6Ou8+UOq53HXV0=
+github.com/aionbit/ixo-plugins/plugin v0.0.0-20250721025127-33acfc63bf41/go.mod h1:wwLL8oGlElpjtbOkTNAZWnVA7oE7Ei77CnAat0vzXMg=
+github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyuac5Z2hdY=
+github.com/mitchellh/mapstructure v1.5.0/go.mod h1:bFUtVrKA4DC2yAKiSyO/QUcy7e+RRV2QTWOzhPopBRo=
