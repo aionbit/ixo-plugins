@@ -185,14 +185,14 @@ type Error struct {
 }
 
 func (e *Error) Throw(v ...any) error {
-	var errs []error
+	var errs []string
 	var tags []string
 	var others []any
 	for _, t := range v {
 		switch target := t.(type) {
 		case error:
 			if target != nil {
-				errs = append(errs, target)
+				errs = append(errs, target.Error())
 			}
 		case string:
 			if target != "" {
@@ -211,6 +211,9 @@ func (e *Error) Throw(v ...any) error {
 	errorStr += " error:"
 	if len(tags) > 0 {
 		errorStr += " " + strings.Join(tags, " ")
+	}
+	if len(errs) > 0 {
+		errorStr += " " + strings.Join(errs, " ")
 	}
 	if len(others) > 0 {
 		errorStr += " " + fmt.Sprintf("%v", others...)
