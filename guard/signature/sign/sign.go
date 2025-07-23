@@ -44,11 +44,13 @@ func (s *sign) Run(ctx context.Context, input any) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	sign, err := guard.GenerateSignature(time.Now(), req.SigningMethod, []byte(req.Data), []byte(req.Secret))
+	t := time.Now()
+	sign, err := guard.GenerateSignature(t, req.SigningMethod, []byte(req.Data), []byte(req.Secret))
 	if err != nil {
 		return nil, s.error("generate error", err)
 	}
 	return map[string]any{
-		"sign": sign,
+		"signature": sign,
+		"timestamp": t.Unix(),
 	}, nil
 }
