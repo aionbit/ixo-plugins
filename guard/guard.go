@@ -2,7 +2,6 @@ package guard
 
 import (
 	"crypto/hmac"
-	"crypto/sha1"
 	"crypto/sha256"
 	"crypto/sha512"
 	"encoding/hex"
@@ -21,11 +20,9 @@ type AuthClaims struct {
 func GenerateSignature(t time.Time, algorithm string, data []byte, secret []byte) (string, error) {
 	var mac hash.Hash
 	switch algorithm {
-	case "HMAC-SHA256":
+	case "HS256":
 		mac = hmac.New(sha256.New, secret)
-	case "HMAC-SHA1":
-		mac = hmac.New(sha1.New, secret)
-	case "HMAC-SHA512":
+	case "HS512":
 		mac = hmac.New(sha512.New, secret)
 	default:
 		return "", errors.New("unsupported algorithm: " + algorithm)
