@@ -4,7 +4,7 @@ go 1.24.4
 
 require (
 	github.com/aionbit/ixo-plugins/guard v0.0.0-20250723103155-7eb28ac92a3a
-	github.com/aionbit/ixo-plugins/plugin v0.0.0-20250723103155-7eb28ac92a3a
+	github.com/aionbit/ixo-plugins/plugin v0.0.0-20250723110144-9e0c320ce33a
 )
 
 require (

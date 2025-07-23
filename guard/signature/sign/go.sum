@@ -1,7 +1,7 @@
 github.com/aionbit/ixo-plugins/guard v0.0.0-20250723103155-7eb28ac92a3a h1:Rl/5iBo4GRy2SHjQ3obfquQng4K9cRq0TWysoux97sU=
 github.com/aionbit/ixo-plugins/guard v0.0.0-20250723103155-7eb28ac92a3a/go.mod h1:6hLjJ0X+F7R3GCRkqjL5tIIMer+/RFKdNAjvMEs9DoQ=
-github.com/aionbit/ixo-plugins/plugin v0.0.0-20250723103155-7eb28ac92a3a h1:x4xrlQ8r8oQ736hYnDJI6QEw4HSawkIxOs1L37UTgS8=
-github.com/aionbit/ixo-plugins/plugin v0.0.0-20250723103155-7eb28ac92a3a/go.mod h1:wwLL8oGlElpjtbOkTNAZWnVA7oE7Ei77CnAat0vzXMg=
+github.com/aionbit/ixo-plugins/plugin v0.0.0-20250723110144-9e0c320ce33a h1:jOM15cevX8nzBENAAZphi+Y4BfHZOMhvE4gWaBpYl2k=
+github.com/aionbit/ixo-plugins/plugin v0.0.0-20250723110144-9e0c320ce33a/go.mod h1:wwLL8oGlElpjtbOkTNAZWnVA7oE7Ei77CnAat0vzXMg=
 github.com/golang-jwt/jwt/v5 v5.2.3 h1:kkGXqQOBSDDWRhWNXTFpqGSCMyh/PLnqUvMGJPDJDs0=
 github.com/golang-jwt/jwt/v5 v5.2.3/go.mod h1:pqrtFR0X4osieyHYxtmOUWsAWrfe1Q5UVIyoH402zdk=
 github.com/mitchellh/mapstructure v1.5.0 h1:jeMsZIYE/09sWLaz43PL7Gy6RuMjD2eJVyuac5Z2hdY=
