@@ -52,5 +52,7 @@ func (s *sign) Run(ctx context.Context, input any) (any, error) {
 	return map[string]any{
 		"signature": sign,
 		"timestamp": t.Unix(),
+		"time":      t.String(),
+		"data":      req.Data,
 	}, nil
 }
