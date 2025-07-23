@@ -3,8 +3,8 @@ module github.com/aionbit/ixo-plugins/guard/signature/sign
 go 1.24.4
 
 require (
-	github.com/aionbit/ixo-plugins/guard v0.0.0-20250722042438-beb29f8eda11
-	github.com/aionbit/ixo-plugins/plugin v0.0.0-20250722042438-beb29f8eda11
+	github.com/aionbit/ixo-plugins/guard v0.0.0-20250723103155-7eb28ac92a3a
+	github.com/aionbit/ixo-plugins/plugin v0.0.0-20250723103155-7eb28ac92a3a
 )
 
 require (
