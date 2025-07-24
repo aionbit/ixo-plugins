@@ -74,11 +74,13 @@ func (s *sign) Run(ctx context.Context, input any) (any, error) {
 		return nil, err
 	}
 
+	now := time.Now()
 	claims := guard.AuthClaims{
 		UserID: req.UserID,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(req.ttl)), // 1小时过期
+			ExpiresAt: jwt.NewNumericDate(now.Add(req.ttl)), // 1小时过期
 			Issuer:    req.Issuer,
+			IssuedAt:  jwt.NewNumericDate(now),
 		},
 	}
 

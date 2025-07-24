@@ -47,12 +47,17 @@ func (a *auth) Run(ctx context.Context, input any) (any, error) {
 		return nil, a.error("parse token error", err)
 	}
 	if claims, ok := token.Claims.(*guard.AuthClaims); ok && token.Valid {
-		return map[string]any{
-			"user_id":    claims.UserID,
-			"issuer":     claims.Issuer,
-			"expires_at": claims.ExpiresAt.String(),
-			"issued_at":  claims.IssuedAt.String(),
-		}, nil
+		data := map[string]any{
+			"user_id": claims.UserID,
+			"issuer":  claims.Issuer,
+		}
+		if claims.ExpiresAt != nil {
+			data["expires_at"] = claims.ExpiresAt.String()
+		}
+		if claims.IssuedAt != nil {
+			data["issued_at"] = claims.IssuedAt.String()
+		}
+		return data, nil
 	} else {
 		return nil, a.error(jwt.ErrTokenInvalidClaims)
 	}
