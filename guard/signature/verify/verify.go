@@ -20,6 +20,9 @@ type request struct {
 	SigningMethod string `mapstructure:"signing_method"`
 	Secret        string `mapstructure:"secret"`
 	Data          string `mapstructure:"data"`
+	TTL           string `mapstructure:"ttl"`
+
+	ttl time.Duration
 }
 
 func (ver *verify) error(v ...any) error {
@@ -43,6 +46,15 @@ func (ver *verify) getRequest(input any) (*request, error) {
 	if req.Secret == "" {
 		return nil, ver.error("secret is required")
 	}
+	if req.TTL == "" {
+		req.ttl = time.Minute * 5
+	} else {
+		d, err := time.ParseDuration(req.TTL)
+		if err != nil || d <= 0 {
+			return nil, ver.error("invalid ttl")
+		}
+		req.ttl = d
+	}
 	return &req, nil
 }
 
@@ -53,7 +65,7 @@ func (ver *verify) Run(ctx context.Context, input any) (any, error) {
 		return nil, err
 	}
 	tm := time.Unix(int64(req.Timestamp), 0)
-	if time.Since(tm) > 5*time.Minute || time.Until(tm) > 5*time.Minute {
+	if time.Since(tm) > req.ttl || time.Until(tm) > req.ttl {
 		return nil, ver.error("expired timestamp")
 	}
 	sign, err := guard.GenerateSignature(tm, req.SigningMethod, []byte(req.Data), []byte(req.Secret))
